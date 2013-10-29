@@ -170,3 +170,4 @@ pip-log.txt
 
 # NPM modules
 node_modules/
+*.log
