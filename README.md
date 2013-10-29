@@ -28,7 +28,14 @@ Provides the ability to truncate HTML strings down to excerpts based on characte
 ### Example Usage
 
 ```javascript
-var excerpt = truncatise("<p>This is a test of Truncatise</p>", {TruncateLength: 4, TruncateBy : "words", Strict : false, StripHTML : true, Suffix : ' (Read More)'})
+var options = {
+		TruncateLength: 4, 
+		TruncateBy : "words", 
+		Strict : false, 
+		StripHTML : true, 
+		Suffix : ' (Read More)'
+	};
+var excerpt = truncatise("<p>This is a test of Truncatise</p>", options);
 console.log(excerpt); // This is a test (Read More)
 
 ```
