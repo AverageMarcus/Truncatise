@@ -1,17 +1,18 @@
 var truncatise		= require("./"),
     chai			= require("chai"),
+    assert			= require("chai").assert,
     mocha           = require("mocha");
     chai.should();
 
 describe("Truncating to characters", function(){
 	it("should be able to strip html", function(){
 		truncatise("<p>This is a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p>", {TruncateLength: 10, TruncateBy : "characters", Strict : true, StripHTML : true, Suffix : ''})
-			.should.equal("This is a ");
+			.should.equal("This is a");
 	});
 
 	it("should be able handle and ignore self-closing tags", function(){
 		truncatise("<p>This<img src=\"test.jpg\" /> is a test of self-closing tags such as <img src=\"test.jpg\" /></p>", {TruncateLength: 10, TruncateBy : "characters", Strict : true, StripHTML : true, Suffix : ''})
-			.should.equal("This is a ");
+			.should.equal("This is a");
 	});
 
 	it("should ignore comments",function() {
@@ -75,7 +76,7 @@ describe("Truncating to words", function(){
 describe("Truncating to paragraphs", function(){
 	it("should be able to strip html", function(){
 		truncatise("<p>This is a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p><p>With multiple paragraphs</p>", {TruncateLength: 1, TruncateBy : "paragraph", StripHTML : true, Suffix : ''})
-			.should.equal("This is a test of html tag stripping ");
+			.should.equal("This is a test of html tag stripping");
 	});
 
 	it("should be able to handle html tags", function(){
@@ -85,12 +86,22 @@ describe("Truncating to paragraphs", function(){
 
 	it("should be able to handle several paragraphs", function(){
 		truncatise("<p>This</p><p>is</p><p>a</p><p>test</p><p>of</p><p>multiple</p><p>paragraphs</p>", {TruncateLength: 3, TruncateBy : "paragraph", StripHTML : true, Suffix : ''})
-			.should.equal("This is a ");
+			.should.equal("This is a");
 	});
 
-	it("should be able to handle double newline as paragraphs", function(){
-		truncatise("This is the first paragraph.\r\n\r\nThis is the second.\n\nThis is the third.", {TruncateLength: 2, TruncateBy : "paragraph", StripHTML : true, Suffix : ''})
-			.should.equal("This is the first paragraph. This is the second. ");
+	it("should append the suffix inside the paragraph", function(){
+		truncatise("<p>This</p><p>is</p><p>a</p><p>test</p><p>of</p><p>multiple</p><p>paragraphs</p>", {TruncateLength: 3, TruncateBy : "paragraph", StripHTML : false, Suffix : '...'})
+			.should.equal("<p>This</p><p>is</p><p>a...</p>");
+	});
+
+	it("should be able to handle double newline", function(){
+		truncatise("This\n\nIs\r\n\r\nA\n\nTest", {TruncateLength: 3, TruncateBy : "paragraph", StripHTML : true, Suffix : ''})
+			.should.equal("This Is A");
+	});
+
+	it("should be able to handle double newline", function(){
+		truncatise("<p>This</p>\n\n<p>Is</p>\n\n<p>A</p>\n\n<p>Test</p>", {TruncateLength: 3, TruncateBy : "paragraph", StripHTML : true, Suffix : ''})
+			.should.equal("This Is A");
 	});
 });
 

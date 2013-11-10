@@ -69,9 +69,10 @@
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
             text = String(text).replace(/<!--(.*?)-->/gm, '').replace(/<\/?[^>]+>/gi, '');
         }
-        //Ensure double newline is treated as a paragraph
-        if(options.TruncateBy.match(/(paragraph(s)?)/)){
-            text = String(text).replace('\n\n','<p></p>').replace('\r\n\r\n', '<p></p>');
+        text = String(text).replace(/<\/p>(\r?\n)+<p>/gm, '</p><p>');
+        //Replace double newlines with paragraphs
+        if(options.StripHTML && String(text).match(/\r?\n\r?\n/)){
+            text = String(text).replace(/((.+)(\r?\n\r?\n|$))/gi, "<p>$2</p>");
         }
 
         for (var pointer = 0; pointer < text.length; pointer++ ) {
@@ -148,8 +149,6 @@
             }
         }
 
-        truncatedText = truncatedText + options.Suffix;
-
         if(!options.StripHTML && tagStack.length > 0){
             while(tagStack.length > 0){
                 var tag = tagStack.pop();
@@ -158,8 +157,14 @@
                 }
             }
         }
-        return truncatedText;
 
+        if(truncatedText.match(/<\/p>$/gi)){
+            truncatedText = truncatedText.replace(/(<\/p>)$/gi, options.Suffix + "$1");
+        }else{
+            truncatedText = truncatedText + options.Suffix;
+        }
+
+        return truncatedText.trim();
     };
 
     // Export to node
