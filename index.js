@@ -69,6 +69,7 @@
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
             text = String(text).replace(/<!--(.*?)-->/gm, '').replace(/<\/?[^>]+>/gi, '');
         }
+        //Remove newline seperating paragraphs
         text = String(text).replace(/<\/p>(\r?\n)+<p>/gm, '</p><p>');
         //Replace double newlines with paragraphs
         if(options.StripHTML && String(text).match(/\r?\n\r?\n/)){
