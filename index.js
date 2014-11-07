@@ -72,13 +72,15 @@
 
         //If not splitting on paragraphs we can quickly remove tags using regex
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
-            if(options.ExemptTags) options.ExemptTags = options.ExemptTags.join("|");
-            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(new RegExp("<(?!\/?\\b(" + options.ExemptTags + ")\\b)[^>]+>", "gi"), '');
+            var tags = "undefined";
+            if(typeof options.ExemptTags !== "undefined") tags = options.ExemptTags.join("|");
+            var rx = new RegExp("<(?!\\/?\\b(" + tags + ")\\b)[^>]+>", "gi");
+            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(rx, '');
         }
         //Remove newline seperating paragraphs
         text = String(text).replace(/<\/p>(\r?\n)+<p>/gm, '</p><p>');
         //Replace double newlines with paragraphs
-        if(options.StripHTML && String(text).match(/\r?\n\r?\n/)){
+        if(!options.StripHTML && String(text).match(/\r?\n\r?\n/)){
             text = String(text).replace(/((.+)(\r?\n\r?\n|$))/gi, "<p>$2</p>");
         }
 
@@ -92,7 +94,7 @@
                         currentState = TAG_START;
                         currentTag = "";
                     }
-                    if(!options.StripHTML || options.ExemptTags){
+                    if(!options.StripHTML || typeof options.ExemptTags !== "undefined"){
                         truncatedText += currentChar;
                     }
                     break;
@@ -114,7 +116,7 @@
                             }
                         }
                     }
-                    if(!options.StripHTML || options.ExemptTags){
+                    if(!options.StripHTML || typeof options.ExemptTags !== "undefined"){
                         truncatedText += currentChar;
                     }
                     break;
@@ -126,7 +128,7 @@
                         wordCounter++;
                         charCounter++;
                     }
-                    if(currentState === NOT_TAG || (!options.StripHTML || options.ExemptTags)){
+                    if(currentState === NOT_TAG || (!options.StripHTML || typeof options.ExemptTags !== "undefined")){
                         truncatedText += currentChar;
                     }
                     break;
@@ -137,7 +139,7 @@
                     if(currentState === TAG_START){
                         currentTag += currentChar;
                     }
-                    if(currentState === NOT_TAG || (!options.StripHTML || options.ExemptTags)){
+                    if(currentState === NOT_TAG || (!options.StripHTML || typeof options.ExemptTags !== "undefined")){
                         truncatedText += currentChar;
                     }
                     break;
@@ -158,7 +160,7 @@
             }
         }
 
-        if((!options.StripHTML || options.ExemptTags) && tagStack.length > 0){
+        if((!options.StripHTML || typeof options.ExemptTags !== "undefined") && tagStack.length > 0){
             while(tagStack.length > 0){
                 var tag = tagStack.pop();
                 if(tag!=="!--"){
