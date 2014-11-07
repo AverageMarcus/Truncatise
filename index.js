@@ -106,10 +106,12 @@
                             }
                         }
 
-                        if(currentTag.indexOf("/") === -1){
-                            tagStack.push(currentTag);
-                        }else if(selfClosingTags.indexOf(currentTag) === -1){
-                            tagStack.pop();
+                        if(selfClosingTags.indexOf(currentTag) === -1) {
+                            if(currentTag.indexOf("/") === -1){
+                                tagStack.push(currentTag);
+                            }else{
+                                tagStack.pop();
+                            }
                         }
                     }
                     if(!options.StripHTML || options.ExemptTags){
