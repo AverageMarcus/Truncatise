@@ -12,6 +12,7 @@
      *          TruncateBy : 'words',   // Options are 'words', 'characters' or 'paragraphs'
      *          TruncateLength : 50,    // The count to be used with TruncatedBy
      *          StripHTML : false,      // Whether or not the truncated text should contain HTML tags
+     *          ExemptTags: undefined   // Array of strings defining tags to exempt from HTML stripping
      *          Strict : true,          // When set to false the truncated text finish at the end of the word
      *          Suffix : '...'          // Text to be appended to the end of the truncated text
      *      }
@@ -52,6 +53,10 @@
                                     || typeof options.StripHTML !== "boolean")
                                 ? false
                                 : options.StripHTML;
+        options.ExemptTags      = (options.ExemptTags === undefined
+                                    || typeof options.ExemptTags !== "object")
+                                ? undefined
+                                : options.ExemptTags;
         options.Strict          = (options.Strict === undefined
                                     || typeof options.Strict !== "boolean")
                                 ? true
@@ -67,7 +72,8 @@
 
         //If not splitting on paragraphs we can quickly remove tags using regex
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
-            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(/<\/?[^>]+>/gi, '');
+            if(options.ExemptTags) options.ExemptTags = options.ExemptTags.join("|");
+            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(new RegExp("<(?!\/?\\b(" + options.ExemptTags + ")\\b)[^>]+>", "gi"), '');
         }
         //Remove newline seperating paragraphs
         text = String(text).replace(/<\/p>(\r?\n)+<p>/gm, '</p><p>');
@@ -86,7 +92,7 @@
                         currentState = TAG_START;
                         currentTag = "";
                     }
-                    if(!options.StripHTML){
+                    if(!options.StripHTML || options.ExemptTags){
                         truncatedText += currentChar;
                     }
                     break;
@@ -106,7 +112,7 @@
                             tagStack.pop();
                         }
                     }
-                    if(!options.StripHTML){
+                    if(!options.StripHTML || options.ExemptTags){
                         truncatedText += currentChar;
                     }
                     break;
@@ -118,7 +124,7 @@
                         wordCounter++;
                         charCounter++;
                     }
-                    if(currentState === NOT_TAG || !options.StripHTML){
+                    if(currentState === NOT_TAG || (!options.StripHTML || options.ExemptTags)){
                         truncatedText += currentChar;
                     }
                     break;
@@ -129,7 +135,7 @@
                     if(currentState === TAG_START){
                         currentTag += currentChar;
                     }
-                    if(currentState === NOT_TAG || !options.StripHTML){
+                    if(currentState === NOT_TAG || (!options.StripHTML || options.ExemptTags)){
                         truncatedText += currentChar;
                     }
                     break;
@@ -150,7 +156,7 @@
             }
         }
 
-        if(!options.StripHTML && tagStack.length > 0){
+        if((!options.StripHTML || options.ExemptTags) && tagStack.length > 0){
             while(tagStack.length > 0){
                 var tag = tagStack.pop();
                 if(tag!=="!--"){
