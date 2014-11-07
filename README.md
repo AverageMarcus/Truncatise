@@ -20,6 +20,7 @@ Provides the ability to truncate HTML strings down to excerpts based on characte
 	TruncateBy 		: 'words',  // Options are 'words', 'characters' or 'paragraphs'
 	TruncateLength	: 50,    	// The count to be used with TruncatedBy
     StripHTML		: false,    // Whether or not the truncated text should contain HTML tags
+    ExemptTags  : undefined // Array of strings defining tags to exempt from HTML stripping
     Strict 			: true,     // If set to false the truncated text finish at the end of the word
     Suffix 			: '...'     // Text to be appended to the end of the truncated text
 }
@@ -32,7 +33,8 @@ var options = {
 		TruncateLength: 4, 
 		TruncateBy : "words", 
 		Strict : false, 
-		StripHTML : true, 
+		StripHTML : true,
+    ExemptTags : ["img"],
 		Suffix : ' (Read More)'
 	};
 var excerpt = truncatise("<p>This is a test of Truncatise</p>", options);
