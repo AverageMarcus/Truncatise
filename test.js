@@ -80,8 +80,8 @@ describe("Truncating to paragraphs", function(){
 	});
 
 	it("should be able to handle html tags", function(){
-		truncatise("<p>This is a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p><p>With multiple paragraphs</p>", {TruncateLength: 1, TruncateBy : "paragraph", StripHTML : false, Suffix : ''})
-			.should.equal("<p>This is a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p>");
+		truncatise("<p>This is <img src=''> a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p><p>With multiple paragraphs</p>", {TruncateLength: 1, TruncateBy : "paragraph", StripHTML : false, Suffix : ''})
+			.should.equal("<p>This is <img src=''> a test of <b>html</b> <strong>tag</strong> <span class='cssClass'>stripping</span></p>");
 	});
 
 	it("should be able to handle several paragraphs", function(){
@@ -132,6 +132,16 @@ describe("Handling tags", function(){
 		truncatise("<p>This <a href=\"/\">is a long paragraph</a> that I intend to truncate.</p>",{TruncateLength: 2, TruncateBy : "words", StripHTML : false, Suffix : ''})
             .should.equal("<p>This <a href=\"/\">is</a></p>");
 	});
+
+  it("should be able to handle self-closing (void) tags",function(){
+    truncatise("<p>This <img src=''> is a long paragraph with images that I intend to truncate.</p>",{TruncateLength: 3, TruncateBy : "words", StripHTML : false, Suffix : ''})
+            .should.equal("<p>This <img src=''> is</p>");
+  });
+
+  it("should be able to leave exempted tags in the text",function(){
+    truncatise("<p>This <img src='' /> is a long paragraph with images that I intend to truncate.</p>",{TruncateLength: 3, TruncateBy : "words", StripHTML : true, ExemptTags : ["img"], Suffix : ''})
+            .should.equal("This <img src='' /> is");
+  });
 });
 
 describe("Performance testing",function() {

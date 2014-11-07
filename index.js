@@ -12,6 +12,7 @@
      *          TruncateBy : 'words',   // Options are 'words', 'characters' or 'paragraphs'
      *          TruncateLength : 50,    // The count to be used with TruncatedBy
      *          StripHTML : false,      // Whether or not the truncated text should contain HTML tags
+     *          ExemptTags: undefined   // Array of strings defining tags to exempt from HTML stripping
      *          Strict : true,          // When set to false the truncated text finish at the end of the word
      *          Suffix : '...'          // Text to be appended to the end of the truncated text
      *      }
@@ -52,6 +53,10 @@
                                     || typeof options.StripHTML !== "boolean")
                                 ? false
                                 : options.StripHTML;
+        options.ExemptTags      = (options.ExemptTags === undefined
+                                    || typeof options.ExemptTags !== "object")
+                                ? undefined
+                                : options.ExemptTags;
         options.Strict          = (options.Strict === undefined
                                     || typeof options.Strict !== "boolean")
                                 ? true
@@ -67,12 +72,15 @@
 
         //If not splitting on paragraphs we can quickly remove tags using regex
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
-            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(/<\/?[^>]+>/gi, '');
+            var tags = "undefined";
+            if(typeof options.ExemptTags !== "undefined") tags = options.ExemptTags.join("|");
+            var rx = new RegExp("<(?!\\/?\\b(" + tags + ")\\b)[^>]+>", "gi");
+            text = String(text).replace(/<!--(.*?)-->/gm, '').replace(rx, '');
         }
         //Remove newline seperating paragraphs
         text = String(text).replace(/<\/p>(\r?\n)+<p>/gm, '</p><p>');
         //Replace double newlines with paragraphs
-        if(options.StripHTML && String(text).match(/\r?\n\r?\n/)){
+        if(!options.StripHTML && String(text).match(/\r?\n\r?\n/)){
             text = String(text).replace(/((.+)(\r?\n\r?\n|$))/gi, "<p>$2</p>");
         }
 
@@ -86,7 +94,7 @@
                         currentState = TAG_START;
                         currentTag = "";
                     }
-                    if(!options.StripHTML){
+                    if(!options.StripHTML || typeof options.ExemptTags !== "undefined"){
                         truncatedText += currentChar;
                     }
                     break;
@@ -100,13 +108,15 @@
                             }
                         }
 
-                        if(currentTag.indexOf("/") === -1){
-                            tagStack.push(currentTag);
-                        }else if(selfClosingTags.indexOf(currentTag) === -1){
-                            tagStack.pop();
+                        if(selfClosingTags.indexOf(currentTag) === -1) {
+                            if(currentTag.indexOf("/") === -1){
+                                tagStack.push(currentTag);
+                            }else{
+                                tagStack.pop();
+                            }
                         }
                     }
-                    if(!options.StripHTML){
+                    if(!options.StripHTML || typeof options.ExemptTags !== "undefined"){
                         truncatedText += currentChar;
                     }
                     break;
@@ -118,7 +128,7 @@
                         wordCounter++;
                         charCounter++;
                     }
-                    if(currentState === NOT_TAG || !options.StripHTML){
+                    if(currentState === NOT_TAG || (!options.StripHTML || typeof options.ExemptTags !== "undefined")){
                         truncatedText += currentChar;
                     }
                     break;
@@ -129,7 +139,7 @@
                     if(currentState === TAG_START){
                         currentTag += currentChar;
                     }
-                    if(currentState === NOT_TAG || !options.StripHTML){
+                    if(currentState === NOT_TAG || (!options.StripHTML || typeof options.ExemptTags !== "undefined")){
                         truncatedText += currentChar;
                     }
                     break;
@@ -150,7 +160,7 @@
             }
         }
 
-        if(!options.StripHTML && tagStack.length > 0){
+        if((!options.StripHTML || typeof options.ExemptTags !== "undefined") && tagStack.length > 0){
             while(tagStack.length > 0){
                 var tag = tagStack.pop();
                 if(tag!=="!--"){
