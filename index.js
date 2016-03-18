@@ -136,7 +136,7 @@
             }
 
             nextChar = text[pointer + 1] || "";
-            isEndOfWord = options.Strict ? true : (!currentChar.match(/[a-z]/i) || !nextChar.match(/[a-z]/i));
+            isEndOfWord = options.Strict ? true : (!currentChar.match(/[a-zA-ZÇ-Ü']/i) || !nextChar.match(/[a-zA-ZÇ-Ü']/i));
 
             if(options.TruncateBy.match(/word(s)?/i) && options.TruncateLength <= wordCounter){
                 truncatedText = truncatedText.trimRight();

@@ -194,3 +194,31 @@ describe("Performance testing",function() {
         });
     });
 });
+
+describe("Strict", function(){
+	it("should close in the middle of a word when strict enabled",function(){
+		truncatise("This is a test of strict mode",{TruncateLength: 12, TruncateBy : "characters", StripHTML : false, Strict : true, Suffix : ''})
+            .should.equal("This is a te");
+	});
+
+	it("should not close in the middle of a word when strict disabled",function(){
+		truncatise("This is a test of strict mode",{TruncateLength: 12, TruncateBy : "characters", StripHTML : false, Strict : false, Suffix : ''})
+            .should.equal("This is a test");
+	});
+
+	it("should not close at an apostrophe when strict disabled",function(){
+		truncatise("This is a test I'm doing of strict mode",{TruncateLength: 16, TruncateBy : "characters", StripHTML : false, Strict : false, Suffix : ''})
+            .should.equal("This is a test I'm");
+	});
+
+  it("should not close on accented char when strict disabled",function(){
+		truncatise("test test tést test",{TruncateLength: 12, TruncateBy : "characters", StripHTML : false, Strict : false, Suffix : ''})
+            .should.equal("test test tést");
+	});
+
+  it("should not close on capital letter when strict disabled",function(){
+		truncatise("This is a TEST of strict mode",{TruncateLength: 12, TruncateBy : "characters", StripHTML : false, Strict : false, Suffix : ''})
+            .should.equal("This is a TEST");
+	});
+
+});
