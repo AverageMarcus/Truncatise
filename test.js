@@ -120,6 +120,36 @@ describe("Appending a suffix", function(){
 		truncatise("<p>This is a long paragraph that I intend to truncate.</p>",{TruncateLength: 2, TruncateBy : "words", StripHTML : false})
             .should.equal("<p>This is...</p>");
 	});
+
+  it("shouldn't add suffix if text length is less than truncate lengh (paragraph)",function() {
+    truncatise("<p>This is a long paragraph that I intend to truncate.</p>",{TruncateLength: 2, TruncateBy : "paragraphs", StripHTML : false})
+            .should.equal("<p>This is a long paragraph that I intend to truncate.</p>");
+  });
+
+  it("shouldn't add suffix if text length is same as truncate lengh (paragraph)",function() {
+    truncatise("<p>This is a long paragraph that I intend to truncate.</p>",{TruncateLength: 1, TruncateBy : "paragraphs", StripHTML : false})
+            .should.equal("<p>This is a long paragraph that I intend to truncate.</p>");
+  });
+
+  it("shouldn't add suffix if text length is less than truncate lengh (word)",function() {
+    truncatise("This is a short line.",{TruncateLength: 200, TruncateBy : "words", StripHTML : false})
+            .should.equal("This is a short line.");
+  });
+
+  it("shouldn't add suffix if text length is same as truncate lengh (word)",function() {
+    truncatise("This is a short line.",{TruncateLength: 5, TruncateBy : "words", StripHTML : false})
+            .should.equal("This is a short line.");
+  });
+
+  it("shouldn't add suffix if text length is less than truncate lengh (chars)",function() {
+    truncatise("This is a short line.",{TruncateLength: 200, TruncateBy : "characters", StripHTML : false})
+            .should.equal("This is a short line.");
+  });
+
+  it("shouldn't add suffix if text length is same as truncate lengh (chars)",function() {
+    truncatise("This is a short line.",{TruncateLength: 21, TruncateBy : "characters", StripHTML : false})
+            .should.equal("This is a short line.");
+  });
 });
 
 describe("Handling tags", function(){
@@ -139,7 +169,7 @@ describe("Performance testing",function() {
     for (var i=0; i<1000000; i++) {
             input += "<p>This is a paragraph used for performance testing</p>\n";
     }
-    
+
     describe("truncate to only 400 words from a 1000000 paragraph long string",function() {
         it("should take less than a second",function() {
                 var startTime = Date.now();
@@ -147,7 +177,7 @@ describe("Performance testing",function() {
                 (Date.now() - startTime).should.be.lte(1000);
         });
     });
-    
+
     describe("truncate to only 1000 words from a 1000000 paragraph long string",function() {
         it("should take less than a second",function() {
                 var startTime = Date.now();
@@ -155,7 +185,7 @@ describe("Performance testing",function() {
                 (Date.now() - startTime).should.be.lte(1000);
         });
     });
-    
+
     describe("truncate to only 10000 words from a 1000000 paragraph long string",function() {
         it("should take less than a second",function() {
                 var startTime = Date.now();

@@ -15,8 +15,8 @@
      *          Strict : true,          // When set to false the truncated text finish at the end of the word
      *          Suffix : '...'          // Text to be appended to the end of the truncated text
      *      }
-     * @return {string} This returns the provided string truncated to the 
-     *      length provided by the options. HTML tags may be stripped based 
+     * @return {string} This returns the provided string truncated to the
+     *      length provided by the options. HTML tags may be stripped based
      *      on the given options.
      */
     var truncatise = function(text,options) {
@@ -39,14 +39,14 @@
             TAG_ATTRIBUTES  = 2;
 
         //Set default values
-        options.TruncateBy      = (options.TruncateBy === undefined 
-                                    || typeof options.TruncateBy !==  "string" 
+        options.TruncateBy      = (options.TruncateBy === undefined
+                                    || typeof options.TruncateBy !==  "string"
                                     || !options.TruncateBy.match(/(word(s)?|character(s)?|paragraph(s)?)/))
-                                ? 'words'   
+                                ? 'words'
                                 : options.TruncateBy.toLowerCase();
-        options.TruncateLength  = (options.TruncateLength === undefined 
+        options.TruncateLength  = (options.TruncateLength === undefined
                                     || typeof options.TruncateLength !== "number")
-                                ? 50        
+                                ? 50
                                 : options.TruncateLength;
         options.StripHTML       = (options.StripHTML === undefined
                                     || typeof options.StripHTML !== "boolean")
@@ -77,7 +77,7 @@
         }
 
         for (var pointer = 0; pointer < text.length; pointer++ ) {
-            
+
             var currentChar = text[pointer];
 
             switch(currentChar){
@@ -137,7 +137,7 @@
 
             nextChar = text[pointer + 1] || "";
             isEndOfWord = options.Strict ? true : (!currentChar.match(/[a-z]/i) || !nextChar.match(/[a-z]/i));
-            
+
             if(options.TruncateBy.match(/word(s)?/i) && options.TruncateLength <= wordCounter){
                 truncatedText = truncatedText.trimRight();
                 break;
@@ -159,10 +159,12 @@
             }
         }
 
-        if(truncatedText.match(/<\/p>$/gi)){
-            truncatedText = truncatedText.replace(/(<\/p>)$/gi, options.Suffix + "$1");
-        }else{
-            truncatedText = truncatedText + options.Suffix;
+        if(pointer < text.length - 1) {
+          if(truncatedText.match(/<\/p>$/gi)){
+              truncatedText = truncatedText.replace(/(<\/p>)$/gi, options.Suffix + "$1");
+          }else{
+              truncatedText = truncatedText + options.Suffix;
+          }
         }
 
         return truncatedText.trim();
