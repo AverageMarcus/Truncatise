@@ -1,6 +1,6 @@
 {
   "name": "truncatise",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Truncate HTML based on characters, words or paragraphs. Has the ability to strip tags.",
   "main": "index.js",
   "scripts": {
