@@ -21,7 +21,7 @@
      */
     var truncatise = function(text,options) {
         var options         = options || {},
-            text            = text || "",
+            text            = (text || "").trim(),
             truncatedText   = "",
             currentState    = 0,
             isEndOfWord     = false,

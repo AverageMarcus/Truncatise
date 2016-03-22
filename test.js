@@ -150,6 +150,11 @@ describe("Appending a suffix", function(){
     truncatise("This is a short line.",{TruncateLength: 21, TruncateBy : "characters", StripHTML : false})
             .should.equal("This is a short line.");
   });
+
+  it("shouldn't add suffix if text length is same as truncate lengh (paragraph with trailing space)",function() {
+    truncatise("<p>This is a long paragraph that I intend to truncate.</p>   ",{TruncateLength: 1, TruncateBy : "paragraphs", StripHTML : false})
+            .should.equal("<p>This is a long paragraph that I intend to truncate.</p>");
+  });
 });
 
 describe("Handling tags", function(){
