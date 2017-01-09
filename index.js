@@ -93,17 +93,21 @@
                 case ">":
                     if(currentState === TAG_START || currentState === TAG_ATTRIBUTES){
                         currentState = NOT_TAG;
-                        if(currentTag.toLowerCase() === "/p"){
+                        currentTag = currentTag.toLowerCase();
+                        if(currentTag === "/p"){
                             paragraphCounter++;
                             if(options.StripHTML){
                                 truncatedText += " ";
                             }
                         }
 
-                        if(currentTag.indexOf("/") === -1){
-                            tagStack.push(currentTag);
-                        }else if(selfClosingTags.indexOf(currentTag) === -1){
-                            tagStack.pop();
+                        // Ignore self-closing tags.
+                        if ((selfClosingTags.indexOf(currentTag) === -1) && (selfClosingTags.indexOf(currentTag + '/') === -1)) {
+                            if(currentTag.indexOf("/") >= 0){
+                                tagStack.pop();
+                            } else {
+                                tagStack.push(currentTag);
+                            }
                         }
                     }
                     if(!options.StripHTML){
