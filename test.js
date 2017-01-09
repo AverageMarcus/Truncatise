@@ -167,6 +167,11 @@ describe("Handling tags", function(){
 		truncatise("<p>This <a href=\"/\">is a long paragraph</a> that I intend to truncate.</p>",{TruncateLength: 2, TruncateBy : "words", StripHTML : false, Suffix : ''})
             .should.equal("<p>This <a href=\"/\">is</a></p>");
 	});
+
+    it("should not append self-closing br tags to the end of the string",function(){
+		truncatise("<p>This<br>handles<br></p>",{TruncateLength: 2, TruncateBy : "words", StripHTML : false, Suffix : ''})
+            .should.equal("<p>This<br>handles<br></p>");
+	});
 });
 
 describe("Performance testing",function() {
