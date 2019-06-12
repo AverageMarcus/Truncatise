@@ -232,3 +232,10 @@ describe("Strict", function(){
 	});
 
 });
+
+describe("Handing newlines", function() {
+    it("should replace newlines with spaces", function(){
+		truncatise("<div><!--block-->Laborum. <strong>Odit</strong> in omn.<br>Lorem Ipsum Abc<br>Lorem Ipsum<br>Lorem Ipsum</div>", {TruncateLength: 8, TruncateBy : "words", StripHTML: true})
+			.should.equal("Laborum. Odit in omn. Lorem Ipsum Abc Lorem...");
+	});
+})

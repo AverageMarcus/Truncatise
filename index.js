@@ -65,6 +65,10 @@
             return text;
         }
 
+        if(options.StripHTML) {
+            text = String(text).replace(/<br( \/)?>/gi, ' ');
+        }
+
         //If not splitting on paragraphs we can quickly remove tags using regex
         if(options.StripHTML && !options.TruncateBy.match(/(paragraph(s)?)/)){
             text = String(text).replace(/<!--(.*?)-->/gm, '').replace(/<\/?[^>]+>/gi, '');
